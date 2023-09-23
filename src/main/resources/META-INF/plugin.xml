@@ -1,0 +1,74 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.github.dt.dependency-trans</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>DependencyTrans</name>
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="no101space@gmail.com" url="https://github.com/PZh101">zhp</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description>
+        <![CDATA[
+            简单的maven依赖格式和gradle依赖格式互转<br>
+            在
+            <pre>
+                &lt;dependency&gt;
+                    &lt;groupId&gt;org.apache&lt;/groupId&gt;
+                    &lt;artifactId&gt;common-io&lt;/artifactId&gt;
+                    &lt;version&gt;1.0.2&lt;/version&gt;
+                &lt;/dependency&gt;
+            </pre>
+            和<span>org.apache:common-io:1.0.2</span>两种格式之间互转
+            <br>
+            使用To_File会生成org/apache/common-io/1.0.2路径,方便快速定位到maven或者gradle目录
+
+        ]]>
+    </description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!--        <toolWindow factoryClass="com.github.dt.dependencytrans.views.DependTransFactory"-->
+        <!--                    id="Demo"-->
+        <!--                    secondary="true"-->
+        <!--                    icon="AllIcons.Toolwindows.WebToolWindow"-->
+        <!--                    anchor="right"-->
+        <!--        />-->
+    </extensions>
+    <actions>
+        <group id="com.github.dt.dependencytrans.Main"
+               text="DependencyTrans"
+               description="Group of Dependency-Trans"
+               popup="true">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <!--            <group>-->
+            <action class="com.github.dt.dependencytrans.action.ToGradleAction"
+                    id="com.github.dt.dependencytrans.action.ToGradleAction"
+                    text="To_Gradle"
+                    description="Convert to gradle">
+            </action>
+            <separator/>
+            <action class="com.github.dt.dependencytrans.action.ToMavenAction"
+                    id="com.github.dt.dependencytrans.action.ToMavenAction"
+                    text="To_Maven"
+                    description="Convert to Maven">
+            </action>
+            <separator/>
+            <action class="com.github.dt.dependencytrans.action.ToFilePathAction"
+                    id="com.github.dt.dependencytrans.action.ToFilePathAction"
+                    text="To_File"
+                    description="Convert to File">
+            </action>
+            <!--            </group>-->
+        </group>
+    </actions>
+</idea-plugin>
