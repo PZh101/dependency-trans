@@ -3,9 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.8.21"
     id("org.jetbrains.intellij") version "1.13.3"
 }
-fun properties(key:String)=providers.gradleProperty(key)
-group = properties("pluginGroup")
-version = properties("pluginVersion")
+fun properties(key: String) = providers.gradleProperty(key)
+group = "com.github.dt"
+version = "0.1.0"
 
 repositories {
     mavenCentral()
