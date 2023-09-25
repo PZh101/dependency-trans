@@ -1,13 +1,14 @@
 package com.github.dt.dependencytrans.action
 
 import com.github.dt.dependencytrans.BuildType
+import com.github.dt.dependencytrans.model.MyStringTransferable
 import com.github.dt.dependencytrans.parse.SelectedStringParses
-import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.editor.Caret
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.actionSystem.EditorActionHandler
 import com.intellij.openapi.editor.actionSystem.EditorWriteActionHandler
+import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.ui.Messages
 import javax.swing.SwingUtilities
 
@@ -27,6 +28,8 @@ class MyEditorActionHandler(private val toType: BuildType) : EditorActionHandler
                 val selectionModel = editor.selectionModel
                 val selectedText1 = selectionModel.selectedText
                 val toDepend = SelectedStringParses.toDependModel(selectedText1).toDepend(toType)
+                // result will write in clipboard
+                CopyPasteManager.getInstance().setContents(MyStringTransferable(toDepend))
                 editor.document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, toDepend)
             } catch (e: Exception) {
                 SwingUtilities.invokeLater { Messages.showErrorDialog(editor.project, e.message, "Error") }

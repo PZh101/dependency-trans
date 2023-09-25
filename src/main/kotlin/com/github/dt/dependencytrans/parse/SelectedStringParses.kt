@@ -2,9 +2,6 @@ package com.github.dt.dependencytrans.parse
 
 import com.github.dt.dependencytrans.BuildType
 import com.github.dt.dependencytrans.model.DependModel
-import com.intellij.openapi.ui.Messages
-import com.intellij.util.ui.UIUtil
-import javax.swing.SwingUtilities
 
 /**
  * 字符串分析
@@ -14,17 +11,43 @@ import javax.swing.SwingUtilities
 object SelectedStringParses {
     fun toDependModel(selected: String?): DependModel {
         if (selected is String) {
+            val trimmedSelectedText = selected.trim()
             val result: DependModel = when (guessSelectedType(selected)) {
                 BuildType.MAVEN -> {
-                    val groupId = Regex("(?<=\\<groupId\\>)(.+)(?=\\<\\/groupId\\>)").find(selected, 0)?.value.toString()
-                    val artifactId = Regex("(?<=\\<artifactId\\>)(.+)(?=\\<\\/artifactId\\>)").find(selected, 0)?.value.toString()
-                    val version = Regex("(?<=\\<version\\>)(.+)(?=\\<\\/version\\>)").find(selected, 0)?.value.toString()
+                    val commentRemoved: StringBuilder = java.lang.StringBuilder()
+                    for (line in trimmedSelectedText.split("\n")) {
+                        val trimmedLine = line.trim()
+                        if (trimmedLine.startsWith("<!--") && trimmedLine.endsWith("-->")) {
+                            continue
+                        }
+                        commentRemoved.append(line)
+                    }
+                    val validSelected = commentRemoved.toString()
+                    val groupId =
+                        Regex("(?<=\\<groupId\\>)(.+)(?=\\<\\/groupId\\>)").find(
+                            validSelected,
+                            0
+                        )?.value.toString()
+                    val artifactId =
+                        Regex("(?<=\\<artifactId\\>)(.+)(?=\\<\\/artifactId\\>)").find(
+                            validSelected,
+                            0
+                        )?.value.toString()
+                    val version =
+                        Regex("(?<=\\<version\\>)(.+)(?=\\<\\/version\\>)").find(
+                            validSelected,
+                            0
+                        )?.value.toString()
                     DependModel(groupId, artifactId, version)
                 }
 
                 BuildType.GRADLE -> {
-                    val collected = selected.split(":", ignoreCase = false, limit = 3)
-                    DependModel(collected[0], collected[1], collected[2])
+                    val collected = trimmedSelectedText.split(":", ignoreCase = false, limit = 3)
+                    if (collected.size == 2) {
+                        DependModel(collected[0], collected[1], "")
+                    } else {
+                        DependModel(collected[0], collected[1], collected[2])
+                    }
                 }
             }
             return result
@@ -39,12 +62,12 @@ object SelectedStringParses {
             return BuildType.MAVEN
         } else {
             val colonCount = trimmedSelectedText.count { it == ':' }
-            if (colonCount in 2..3) {
+            if (colonCount in 1..2) {
                 return BuildType.GRADLE
             }
         }
         val s = "无法猜测选中文本( $selected )的类型"
-        SwingUtilities.invokeLater { Messages.showMessageDialog(s, "ERROR", UIUtil.getErrorIcon()) }
+//        SwingUtilities.invokeLater { Messages.showMessageDialog(s, "ERROR", UIUtil.getErrorIcon()) }
         throw UnsupportedOperationException(s)
     }
 

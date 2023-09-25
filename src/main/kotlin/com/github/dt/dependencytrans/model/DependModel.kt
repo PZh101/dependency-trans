@@ -20,18 +20,31 @@ data class DependModel(val groupId: String, val artifactId: String, val version:
     fun toDepend(type: BuildType): String {
         when (type) {
             BuildType.MAVEN -> {
-                return """
+                if (version.isNotEmpty() && "null" != version) {
+                    return """
                                     <dependency>
                                         <groupId>${groupId}</groupId>
                                         <artifactId>${artifactId}</artifactId>
                                         <version>${version}</version>
                                     </dependency>
                 """.trimIndent()
+                } else {
+                    return """
+                                    <dependency>
+                                        <groupId>${groupId}</groupId>
+                                        <artifactId>${artifactId}</artifactId>
+                                    </dependency>
+                """.trimIndent()
+                }
             }
 
             BuildType.GRADLE -> {
 //                return "implementation(\"${groupId}:${artifactId}:${version}\")"
-                return "${groupId}:${artifactId}:${version}"
+                return if (version.isNotEmpty() && "null" != version) {
+                    "${groupId}:${artifactId}:${version}"
+                } else {
+                    "${groupId}:${artifactId}"
+                }
             }
 
         }
