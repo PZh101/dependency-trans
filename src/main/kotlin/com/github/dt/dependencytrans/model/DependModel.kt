@@ -11,10 +11,19 @@ data class DependModel(val groupId: String, val artifactId: String, val version:
     /**
      * 变为文件路径
      */
-    fun toFilePath(): String {
-        return groupId.replace(".", File.separator) + File.separator +
+    fun toFilePath(basePath: String?): String {
+        val artifactIdPath = groupId.replace(".", File.separator) + File.separator +
                 artifactId.replace(".", File.separator) + File.separator +
                 version
+        return if (basePath is String) {
+            if (basePath.endsWith(File.separator)) {
+                basePath + artifactIdPath
+            } else {
+                basePath + File.separator + artifactIdPath
+            }
+        } else {
+            artifactIdPath
+        }
     }
 
     fun toDepend(type: BuildType): String {
