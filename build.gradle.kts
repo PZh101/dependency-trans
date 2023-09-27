@@ -5,7 +5,7 @@ plugins {
 }
 fun properties(key: String) = providers.gradleProperty(key)
 group = "com.github.dt"
-version = "0.1.0"
+version = "0.1.1"
 
 repositories {
     mavenCentral()
